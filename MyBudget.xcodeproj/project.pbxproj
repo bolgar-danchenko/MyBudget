@@ -13,6 +13,7 @@
 		B51F0E382986C53500ABD25E /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B51F0E372986C53500ABD25E /* Preview Assets.xcassets */; };
 		B51F0E3A2986C53500ABD25E /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = B51F0E392986C53500ABD25E /* Persistence.swift */; };
 		B51F0E3D2986C53500ABD25E /* MyBudget.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = B51F0E3B2986C53500ABD25E /* MyBudget.xcdatamodeld */; };
+		B51F0E452986C6CF00ABD25E /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B51F0E442986C6CF00ABD25E /* MainView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -23,6 +24,7 @@
 		B51F0E372986C53500ABD25E /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		B51F0E392986C53500ABD25E /* Persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
 		B51F0E3C2986C53500ABD25E /* MyBudget.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MyBudget.xcdatamodel; sourceTree = "<group>"; };
+		B51F0E442986C6CF00ABD25E /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -55,6 +57,7 @@
 		B51F0E2F2986C53300ABD25E /* MyBudget */ = {
 			isa = PBXGroup;
 			children = (
+				B51F0E432986C6BA00ABD25E /* Main */,
 				B51F0E302986C53300ABD25E /* MyBudgetApp.swift */,
 				B51F0E322986C53300ABD25E /* ContentView.swift */,
 				B51F0E342986C53500ABD25E /* Assets.xcassets */,
@@ -71,6 +74,14 @@
 				B51F0E372986C53500ABD25E /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		B51F0E432986C6BA00ABD25E /* Main */ = {
+			isa = PBXGroup;
+			children = (
+				B51F0E442986C6CF00ABD25E /* MainView.swift */,
+			);
+			path = Main;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -146,6 +157,7 @@
 				B51F0E3A2986C53500ABD25E /* Persistence.swift in Sources */,
 				B51F0E332986C53300ABD25E /* ContentView.swift in Sources */,
 				B51F0E3D2986C53500ABD25E /* MyBudget.xcdatamodeld in Sources */,
+				B51F0E452986C6CF00ABD25E /* MainView.swift in Sources */,
 				B51F0E312986C53300ABD25E /* MyBudgetApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
