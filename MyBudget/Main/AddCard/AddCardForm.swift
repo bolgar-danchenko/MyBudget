@@ -25,56 +25,95 @@ struct AddCardForm: View {
     
     var body: some View {
         NavigationView {
-            Form {
-                Section {
-                    TextField("Name", text: $name)
-                    
-                    TextField("Credit Card Number", text: $cardNumber)
-                        .keyboardType(.numberPad)
-                    
-                    TextField("Credit Limit", text: $limit)
-                        .keyboardType(.numberPad)
-                    
-                    Picker("Type", selection: $cardType) {
-                        ForEach(["Visa", "MasterCard", "Discovery", "Citibank"], id: \.self) { cardType in
-                            Text(String(cardType)).tag(String(cardType))
-                        }
-                    }
-                } header: {
-                    Text("Card Info")
-                }
-                
-                Section {
-                    Picker("Month", selection: $month) {
-                        ForEach(1...12, id: \.self) { num in
-                            Text(String(num)).tag(String(num))
-                        }
-                    }
-                    
-                    Picker("Year", selection: $year) {
-                        ForEach(currentYear..<currentYear + 20, id: \.self) { num in
-                            Text(String(num)).tag(String(num))
-                        }
-                    }
-                } header: {
-                    Text("Expiration")
-                }
-                
-                Section {
-                    ColorPicker("Color", selection: $color)
-                } header: {
-                    Text("Color")
-                }
-            }
+            AddCardFormView()
             .navigationTitle("Add Credit Card")
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button {
-                        dismiss()
-                    } label: {
-                        Text("Cancel")
+                    cancelButton
+                }
+                
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    saveButton
+                }
+            }
+        }
+    }
+    
+    private var cancelButton: some View {
+        Button {
+            dismiss()
+        } label: {
+            Text("Cancel")
+        }
+    }
+    
+    private var saveButton: some View {
+        Button {
+            let viewContext = PersistenceController.shared.container.viewContext
+            let card = Card(context: viewContext)
+            
+            card.name = self.name
+            card.number = self.cardNumber
+            card.limit = Int32(self.limit) ?? 0
+            card.expMonth = Int16(self.month)
+            card.expYear = Int16(self.year)
+            card.timestamp = Date()
+            card.color = UIColor(self.color).encode()
+            card.cardType = self.cardType
+            
+            do {
+                try viewContext.save()
+                dismiss()
+            } catch {
+                print("Failed to persist new card: \(error)")
+            }
+            
+        } label: {
+            Text("Save")
+        }
+    }
+    
+    @ViewBuilder
+    private func AddCardFormView() -> some View {
+        Form {
+            Section {
+                TextField("Name", text: $name)
+                
+                TextField("Credit Card Number", text: $cardNumber)
+                    .keyboardType(.numberPad)
+                
+                TextField("Credit Limit", text: $limit)
+                    .keyboardType(.numberPad)
+                
+                Picker("Type", selection: $cardType) {
+                    ForEach(["Visa", "MasterCard"], id: \.self) { cardType in
+                        Text(String(cardType)).tag(String(cardType))
                     }
                 }
+            } header: {
+                Text("Card Info")
+            }
+            
+            Section {
+                Picker("Month", selection: $month) {
+                    ForEach(1...12, id: \.self) { num in
+                        Text(String(num)).tag(String(num))
+                    }
+                }
+                
+                Picker("Year", selection: $year) {
+                    ForEach(currentYear..<currentYear + 20, id: \.self) { num in
+                        Text(String(num)).tag(String(num))
+                    }
+                }
+            } header: {
+                Text("Expiration")
+            }
+            
+            Section {
+                ColorPicker("Color", selection: $color)
+            } header: {
+                Text("Color")
             }
         }
     }
@@ -82,6 +121,20 @@ struct AddCardForm: View {
 
 struct AddCardForm_Previews: PreviewProvider {
     static var previews: some View {
-        AddCardForm()
+//        AddCardForm()
+        let context = PersistenceController.shared.container.viewContext
+        MainView()
+            .environment(\.managedObjectContext, context)
+    }
+}
+
+extension UIColor {
+    
+    class func color(data: Data) -> UIColor? {
+        return try? NSKeyedUnarchiver.unarchivedObject(ofClass: UIColor.self, from: data)
+    }
+    
+    func encode() -> Data? {
+        return try? NSKeyedArchiver.archivedData(withRootObject: self, requiringSecureCoding: false)
     }
 }
