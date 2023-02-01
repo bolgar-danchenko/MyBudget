@@ -14,7 +14,7 @@ struct MainView: View {
     @Environment(\.managedObjectContext) private var viewContext
 
     @FetchRequest(
-        sortDescriptors: [NSSortDescriptor(keyPath: \Card.timestamp, ascending: true)],
+        sortDescriptors: [NSSortDescriptor(keyPath: \Card.timestamp, ascending: false)],
         animation: .default)
     private var cards: FetchedResults<Card>
     
@@ -116,7 +116,10 @@ struct MainView: View {
         
         let card: Card
         
+        @State var refreshId = UUID()
+        
         @State private var shouldShowActionSheet = false
+        @State private var shouldShowEditForm = false
         
         private func handleDelete() {
             let viewContext = PersistenceController.shared.container.viewContext
@@ -146,16 +149,14 @@ struct MainView: View {
                         Button("Cancel", role: .cancel) {
                             shouldShowActionSheet.toggle()
                         }
+                        Button("Edit") {
+                            shouldShowEditForm.toggle()
+                        }
                         Button("Delete Card", role: .destructive) {
                             handleDelete()
                         }
-
-                    } message: {
-                        Text("Options")
                     }
-
                 }
-                
                 
                 HStack {
                     let imageName = card.cardType?.lowercased() ?? ""
@@ -173,9 +174,16 @@ struct MainView: View {
                 
                 Text(card.number ?? "")
                 
-                Text("Credit Limit: $\(card.limit)")
-                
-                HStack { Spacer() }
+                HStack {
+                    Text("Credit Limit: $\(card.limit)")
+                    
+                    Spacer()
+                    
+                    VStack(alignment: .trailing) {
+                        Text("Valid Thru")
+                        Text("\(String(format: "%02d", card.expMonth))/\(String(card.expYear % 2000))")
+                    }
+                }
             }
             .foregroundColor(.white)
             .padding()
@@ -202,6 +210,9 @@ struct MainView: View {
             .shadow(radius: 5)
             .padding(.horizontal)
             .padding(.top, 8)
+            .fullScreenCover(isPresented: $shouldShowEditForm) {
+                AddCardForm(card: self.card)
+            }
         }
     }
     
