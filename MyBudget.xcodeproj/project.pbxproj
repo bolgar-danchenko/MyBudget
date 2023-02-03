@@ -15,6 +15,7 @@
 		B51F0E3D2986C53500ABD25E /* MyBudget.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = B51F0E3B2986C53500ABD25E /* MyBudget.xcdatamodeld */; };
 		B51F0E452986C6CF00ABD25E /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B51F0E442986C6CF00ABD25E /* MainView.swift */; };
 		B51F0E482988452200ABD25E /* AddCardForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = B51F0E472988452200ABD25E /* AddCardForm.swift */; };
+		B57A1FF6298CFC2C002A6EBD /* AddTransactionForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = B57A1FF5298CFC2C002A6EBD /* AddTransactionForm.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -27,6 +28,7 @@
 		B51F0E3C2986C53500ABD25E /* MyBudget.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MyBudget.xcdatamodel; sourceTree = "<group>"; };
 		B51F0E442986C6CF00ABD25E /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		B51F0E472988452200ABD25E /* AddCardForm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCardForm.swift; sourceTree = "<group>"; };
+		B57A1FF5298CFC2C002A6EBD /* AddTransactionForm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddTransactionForm.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -81,6 +83,7 @@
 		B51F0E432986C6BA00ABD25E /* Main */ = {
 			isa = PBXGroup;
 			children = (
+				B57A1FF4298CFC20002A6EBD /* Transaction */,
 				B51F0E462988451700ABD25E /* AddCard */,
 				B51F0E442986C6CF00ABD25E /* MainView.swift */,
 			);
@@ -93,6 +96,14 @@
 				B51F0E472988452200ABD25E /* AddCardForm.swift */,
 			);
 			path = AddCard;
+			sourceTree = "<group>";
+		};
+		B57A1FF4298CFC20002A6EBD /* Transaction */ = {
+			isa = PBXGroup;
+			children = (
+				B57A1FF5298CFC2C002A6EBD /* AddTransactionForm.swift */,
+			);
+			path = Transaction;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -168,6 +179,7 @@
 				B51F0E3A2986C53500ABD25E /* Persistence.swift in Sources */,
 				B51F0E482988452200ABD25E /* AddCardForm.swift in Sources */,
 				B51F0E332986C53300ABD25E /* ContentView.swift in Sources */,
+				B57A1FF6298CFC2C002A6EBD /* AddTransactionForm.swift in Sources */,
 				B51F0E3D2986C53500ABD25E /* MyBudget.xcdatamodeld in Sources */,
 				B51F0E452986C6CF00ABD25E /* MainView.swift in Sources */,
 				B51F0E312986C53300ABD25E /* MyBudgetApp.swift in Sources */,
