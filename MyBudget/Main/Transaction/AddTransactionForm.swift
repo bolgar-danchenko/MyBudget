@@ -10,6 +10,8 @@ import PhotosUI
 
 struct AddTransactionForm: View {
     
+    let card: Card
+    
     @Environment(\.dismiss) private var dismiss
     
     @State private var name = ""
@@ -84,6 +86,8 @@ struct AddTransactionForm: View {
             transaction.timestamp = self.date
             transaction.photoData = photoData
             
+            transaction.card = self.card
+            
             do {
                 try context.save()
                 dismiss()
@@ -107,7 +111,17 @@ struct AddTransactionForm: View {
 }
 
 struct AddTransactionForm_Previews: PreviewProvider {
+    
+    static let firstCard: Card? = {
+        let context = PersistenceController.shared.container.viewContext
+        let request = Card.fetchRequest()
+        request.sortDescriptors = [.init(key: "timestamp", ascending: false)]
+        return try? context.fetch(request).first
+    }()
+    
     static var previews: some View {
-        AddTransactionForm()
+        if let card = firstCard {
+            AddTransactionForm(card: card)
+        }
     }
 }
