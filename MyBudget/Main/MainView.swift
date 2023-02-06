@@ -10,7 +10,6 @@ import SwiftUI
 struct MainView: View {
     
     @State private var shouldPresentAddCardForm = false
-    @State private var shouldPresentAddTransactionForm = false
     
     @Environment(\.managedObjectContext) private var viewContext
 
@@ -18,11 +17,6 @@ struct MainView: View {
         sortDescriptors: [NSSortDescriptor(keyPath: \Card.timestamp, ascending: false)],
         animation: .default)
     private var cards: FetchedResults<Card>
-    
-    @FetchRequest(
-        sortDescriptors: [NSSortDescriptor(keyPath: \CardTransaction.timestamp, ascending: false)],
-        animation: .default)
-    private var transactions: FetchedResults<CardTransaction>
     
     var body: some View {
         NavigationView {
@@ -38,65 +32,7 @@ struct MainView: View {
                     .frame(height: 280)
                     .indexViewStyle(.page(backgroundDisplayMode: .always))
                     
-                    Text("Get starting by adding your first transaction")
-                    
-                    Button {
-                        shouldPresentAddTransactionForm.toggle()
-                    } label: {
-                        Text("+ Transaction")
-                            .padding(EdgeInsets(top: 10, leading: 14, bottom: 10, trailing: 14))
-                            .background(Color(.label))
-                            .foregroundColor(Color(.systemBackground))
-                            .font(.headline)
-                            .cornerRadius(5)
-                    }
-                    .fullScreenCover(isPresented: $shouldPresentAddTransactionForm) {
-                        AddTransactionForm()
-                    }
-                    
-                    ForEach(transactions) { transaction in
-                        VStack {
-                            HStack {
-                                
-                                VStack(alignment: .leading) {
-                                    Text(transaction.name ?? "")
-                                        .font(.headline)
-                                    
-                                    if let date = transaction.timestamp,
-                                       let dateString = dateFormatter.string(from: date) {
-                                        Text(dateString)
-                                    }
-                                }
-                                
-                                Spacer()
-                                
-                                VStack(alignment: .trailing) {
-                                    Button {
-                                        
-                                    } label: {
-                                        Image(systemName: "ellipsis")
-                                            .font(.system(size: 24))
-                                    }
-                                    .padding(EdgeInsets(top: 6, leading: 8, bottom: 4, trailing: 0))
-                                    
-                                    Text(String(format: "$%.2f", transaction.amount))
-                                }
-                            }
-                            
-                            if let photoData = transaction.photoData,
-                               let uiImage = UIImage(data: photoData) {
-                                Image(uiImage: uiImage)
-                                    .resizable()
-                                    .scaledToFill()
-                            }
-                        }
-                        .foregroundColor(Color(.label))
-                        .padding()
-                        .background(Color.white)
-                        .cornerRadius(5)
-                        .shadow(radius: 5)
-                        .padding()
-                    }
+                    TransactionsListView()
                     
                 } else {
                     emptyPromptMessage
@@ -122,13 +58,6 @@ struct MainView: View {
             }
         }
     }
-    
-    private let dateFormatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .short
-        formatter.timeStyle = .none
-        return formatter
-    }()
     
     private var emptyPromptMessage: some View {
         VStack {

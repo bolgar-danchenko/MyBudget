@@ -1,0 +1,132 @@
+//
+//  TransactionsListView.swift
+//  MyBudget
+//
+//  Created by Konstantin Bolgar-Danchenko on 06.02.2023.
+//
+
+import SwiftUI
+
+struct TransactionsListView: View {
+    
+    @State private var shouldPresentAddTransactionForm = false
+    
+    @Environment(\.managedObjectContext) private var viewContext
+    @FetchRequest(
+        sortDescriptors: [NSSortDescriptor(keyPath: \CardTransaction.timestamp, ascending: false)],
+        animation: .default)
+    private var transactions: FetchedResults<CardTransaction>
+    
+    var body: some View {
+        VStack {
+            Text("Get starting by adding your first transaction")
+            
+            Button {
+                shouldPresentAddTransactionForm.toggle()
+            } label: {
+                Text("+ Transaction")
+                    .padding(EdgeInsets(top: 10, leading: 14, bottom: 10, trailing: 14))
+                    .background(Color(.label))
+                    .foregroundColor(Color(.systemBackground))
+                    .font(.headline)
+                    .cornerRadius(5)
+            }
+            .fullScreenCover(isPresented: $shouldPresentAddTransactionForm) {
+                AddTransactionForm()
+            }
+            
+            ForEach(transactions) { transaction in
+                CardTransactionView(transaction: transaction)
+            } 
+        }
+    }
+}
+
+struct CardTransactionView: View {
+    
+    let transaction: CardTransaction
+    
+    @State var shouldShowActionSheet = false
+    
+    private let dateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .short
+        formatter.timeStyle = .none
+        return formatter
+    }()
+    
+    func handleDelete() {
+        withAnimation {
+            do {
+                let context = PersistenceController.shared.container.viewContext
+                context.delete(transaction)
+                try context.save()
+            } catch {
+                print("Failed to delete transaction: \(error)")
+            }
+        }
+    }
+    
+    var body: some View {
+        
+        VStack {
+            HStack {
+                VStack(alignment: .leading) {
+                    Text(transaction.name ?? "")
+                        .font(.headline)
+                    
+                    if let date = transaction.timestamp,
+                       let dateString = dateFormatter.string(from: date) {
+                        Text(dateString)
+                    }
+                }
+                
+                Spacer()
+                
+                VStack(alignment: .trailing) {
+                    Button {
+                        shouldShowActionSheet.toggle()
+                    } label: {
+                        Image(systemName: "ellipsis")
+                            .font(.system(size: 24))
+                    }
+                    .padding(EdgeInsets(top: 6, leading: 8, bottom: 4, trailing: 0))
+                    .confirmationDialog(self.transaction.name ?? "", isPresented: $shouldShowActionSheet, titleVisibility: Visibility.visible) {
+                        Button("Cancel", role: .cancel) {
+                            shouldShowActionSheet.toggle()
+                        }
+
+                        Button("Delete Transaction", role: .destructive) {
+                            handleDelete()
+                        }
+                    }
+                    
+                    Text(String(format: "$%.2f", transaction.amount))
+                }
+            }
+            
+            if let photoData = transaction.photoData,
+               let uiImage = UIImage(data: photoData) {
+                Image(uiImage: uiImage)
+                    .resizable()
+                    .scaledToFill()
+            }
+        }
+        .foregroundColor(Color(.label))
+        .padding()
+        .background(Color.white)
+        .cornerRadius(5)
+        .shadow(radius: 5)
+        .padding()
+    }
+}
+
+struct TransactionsListView_Previews: PreviewProvider {
+    static var previews: some View {
+        let context = PersistenceController.shared.container.viewContext
+        ScrollView {
+            TransactionsListView()
+        }
+        .environment(\.managedObjectContext, context)
+    }
+}
