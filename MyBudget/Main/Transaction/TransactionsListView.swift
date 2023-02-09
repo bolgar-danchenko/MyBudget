@@ -121,6 +121,28 @@ struct CardTransactionView: View {
                 }
             }
             
+            if let categories = transaction.categories as? Set<TransactionCategory> {
+                let sortedCategories = Array(categories).sorted(by: { $0.timestamp ?? Date() > $1.timestamp ?? Date() })
+                HStack {
+                    ForEach(sortedCategories) { category in
+                        HStack {
+                            if let data = category.colorData,
+                               let uiColor = UIColor.color(data: data) {
+                                let color = Color(uiColor: uiColor)
+                                Text(category.name ?? "")
+                                    .font(.system(size: 16, weight: .semibold))
+                                    .padding(.vertical, 6)
+                                    .padding(.horizontal, 8)
+                                    .background(color)
+                                    .foregroundColor(.white)
+                                    .cornerRadius(5)
+                            }
+                        }
+                    }
+                    Spacer()
+                }
+            }
+            
             if let photoData = transaction.photoData,
                let uiImage = UIImage(data: photoData) {
                 Image(uiImage: uiImage)
