@@ -76,12 +76,14 @@ struct AddTransactionForm: View {
                                  .onChange(of: selectedPhoto) { newValue in
                                      Task {
                                          if let data = try? await newValue?.loadTransferable(type: Data.self) {
-                                             photoData = data
+                                             let uiImage = UIImage(data: data)?.resized(to: .init(width: 300, height: 300))
+                                             let compressedImageData = uiImage?.jpegData(compressionQuality: 0.3)
+                                             photoData = compressedImageData
                                          }
                                      }
                                  }
                     if let photoData,
-                       let uiImage = UIImage(data: photoData)?.resized(to: .init(width: 300, height: 300)) {
+                       let uiImage = UIImage(data: photoData) {
                         Image(uiImage: uiImage)
                             .resizable()
                             .scaledToFill()
