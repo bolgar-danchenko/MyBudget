@@ -42,20 +42,41 @@ struct TransactionsListView: View {
                     addTransactionButton
                     filterButton
                         .sheet(isPresented: $shouldPresentFilterSheet) {
-                            FilterSheet { categories in
-                                // filtering
+                            FilterSheet(selectedCategories: selectedCategories) { categories in
+                                self.selectedCategories = categories
                             }
                         }
                 }
                 .padding(.horizontal)
                 
-                ForEach(fetchRequest.wrappedValue) { transaction in
+                ForEach(filterTransactions(selectedCategories: selectedCategories)) { transaction in
                     CardTransactionView(transaction: transaction)
                 }
             }
         }
         .fullScreenCover(isPresented: $shouldPresentAddTransactionForm) {
             AddTransactionForm(card: self.card)
+        }
+    }
+    
+    @State var selectedCategories = Set<TransactionCategory>()
+    
+    private func filterTransactions(selectedCategories: Set<TransactionCategory>) -> [CardTransaction] {
+        if selectedCategories.isEmpty {
+            return Array(fetchRequest.wrappedValue)
+        }
+        
+        return fetchRequest.wrappedValue.filter { transaction in
+            var shouldKeep = false
+            
+            if let categories = transaction.categories as? Set<TransactionCategory> {
+                categories.forEach({ category in
+                    if selectedCategories.contains(category) {
+                        shouldKeep = true
+                    }
+                })
+            }
+            return shouldKeep
         }
     }
     
@@ -93,6 +114,7 @@ struct TransactionsListView: View {
 
 struct FilterSheet: View {
     
+    @State var selectedCategories: Set<TransactionCategory>
     let didSaveFilters: (Set<TransactionCategory>) -> ()
     
     @Environment(\.dismiss) private var dismiss
@@ -103,8 +125,6 @@ struct FilterSheet: View {
         sortDescriptors: [NSSortDescriptor(keyPath: \TransactionCategory.timestamp, ascending: false)],
         animation: .default)
     private var categories : FetchedResults<TransactionCategory>
-    
-    @State var selectedCategories = Set<TransactionCategory>()
     
     var body: some View {
         NavigationView {
