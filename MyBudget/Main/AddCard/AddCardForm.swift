@@ -23,7 +23,7 @@ struct AddCardForm: View {
             _limit = State(initialValue: String(limit))
         }
         
-        _cardType = State(initialValue: self.card?.cardType ?? "")
+        _cardType = State(initialValue: self.card?.cardType ?? "Visa")
         _month = State(initialValue: Int(self.card?.expMonth ?? 1))
         _year = State(initialValue: Int(self.card?.expYear ?? Int16(currentYear)))
         
@@ -85,6 +85,7 @@ struct AddCardForm: View {
             card.expYear = Int16(self.year)
             card.timestamp = Date()
             card.color = UIColor(self.color).encode()
+            
             card.cardType = self.cardType
             
             do {
