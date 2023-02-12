@@ -13,7 +13,7 @@ struct MyBudgetApp: App {
 
     var body: some Scene {
         WindowGroup {
-            MainView()
+            DeviceIdiomView()
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
         }
     }
