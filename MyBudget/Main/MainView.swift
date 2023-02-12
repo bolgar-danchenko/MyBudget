@@ -26,7 +26,6 @@ struct MainView: View {
         NavigationView {
             ScrollView {
                 if !cards.isEmpty {
-                    
                     TabView(selection: $selectedCardHash) {
                         ForEach(cards) { card in
                             CreditCardView(card: card)
@@ -41,25 +40,10 @@ struct MainView: View {
                         self.selectedCardHash = cards.first?.hash ?? -1
                     }
                     
-//                    TabView(selection: $cardSelectionIndex) {
-//                        ForEach(0..<cards.count, id: \.self) { i in
-//                            let card = cards[i]
-//                            CreditCardView(card: card)
-//                                .padding(.bottom, 50)
-//                                .tag(i)
-//                        }
-//                    }
-                    
                     if let firstIndex = cards.firstIndex(where: { $0.hash == selectedCardHash }) {
                         let card = self.cards[firstIndex]
                         TransactionsListView(card: card)
                     }
-                    
-//                    if let selectedCard = cards[cardSelectionIndex] {
-//                        Text(selectedCard.name ?? "")
-//                        TransactionsListView(card: selectedCard)
-//                    }
-                    
                 } else {
                     emptyPromptMessage
                 }
@@ -73,13 +57,6 @@ struct MainView: View {
             }
             .navigationTitle("Credit Cards")
             .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    HStack {
-                        addItemButton
-                        deleteAllButton
-                    }
-                }
-                
                 ToolbarItem(placement: .navigationBarTrailing) {
                     addCardButton
                 }
@@ -107,45 +84,25 @@ struct MainView: View {
         .font(.system(size: 22, weight: .semibold))
     }
     
-    private var deleteAllButton: some View {
-        Button {
-            cards.forEach { card in
-                viewContext.delete(card)
-            }
-            
-            do {
-                try viewContext.save()
-            }catch {
-                
-            }
-            
-        } label: {
-            Text("Delete All")
-        }
-    }
-    
-    var addItemButton: some View {
-        Button {
-            withAnimation {
-                let viewContext = PersistenceController.shared.container.viewContext
-                let card = Card(context: viewContext)
-                card.timestamp = Date()
-
-                do {
-                    try viewContext.save()
-                } catch {
-//                    let nsError = error as NSError
-//                    fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
-                }
-            }
-        } label: {
-            Text("Add Item")
-        }
-    }
-    
     struct CreditCardView: View {
         
         let card: Card
+        
+        @Environment(\.managedObjectContext) private var viewContext
+        
+        var fetchRequest: FetchRequest<CardTransaction>
+        
+        init(card: Card) {
+            self.card = card
+            
+            fetchRequest = FetchRequest<CardTransaction>(
+                entity: CardTransaction.entity(),
+                sortDescriptors: [
+                    .init(key: "timestamp", ascending: false)
+                ],
+                predicate: .init(format: "card == %@", self.card)
+            )
+        }
         
         @State var refreshId = UUID()
         
@@ -199,14 +156,18 @@ struct MainView: View {
                     
                     Spacer()
                     
-                    Text("Balance: $5,000")
-                        .font(.system(size: 18, weight: .semibold))
+                    if let balance = fetchRequest.wrappedValue.reduce(0, { $0 + $1.amount }) {
+                        Text("Balance: $\(String(format: "%.2f", balance))")
+                            .font(.system(size: 18, weight: .semibold))
+                    }
                 }
                 
                 Text(card.number ?? "")
                 
                 HStack {
-                    Text("Credit Limit: $\(card.limit)")
+                    let balance = fetchRequest.wrappedValue.reduce(0, { $0 + $1.amount })
+                    
+                    Text("Credit Limit: $\(card.limit - Int32(balance))")
                     
                     Spacer()
                     
