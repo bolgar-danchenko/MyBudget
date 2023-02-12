@@ -269,11 +269,13 @@ struct CardTransactionView: View {
         }
         .foregroundColor(Color(.label))
         .padding()
-        .background(Color.white)
+        .background(Color.transactionBackground)
         .cornerRadius(5)
         .shadow(radius: 5)
         .padding()
     }
+    
+//    @Environment(\.colorScheme) var colorScheme
 }
 
 struct TransactionsListView_Previews: PreviewProvider {
@@ -287,11 +289,14 @@ struct TransactionsListView_Previews: PreviewProvider {
     
     static var previews: some View {
         let context = PersistenceController.shared.container.viewContext
-        ScrollView {
-            if let card = firstCard {
-                TransactionsListView(card: card)
+        NavigationView(content: {
+            ScrollView {
+                if let card = firstCard {
+                    TransactionsListView(card: card)
+                }
             }
-        }
+        })
+        .preferredColorScheme(.dark)
         .environment(\.managedObjectContext, context)
     }
 }
